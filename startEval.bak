@@ -18,30 +18,29 @@ COLE ANDERSON
 
 (define (startEval entry)
   (if (list? entry) ;checks for valid input into program ie: (startEval '(entry))
+      
       (cond
         ;Checks for what operation is placed as the first element of input
         ;ARITHMETIC OPERATORS:
-        [(equal? "+" (symbol->string (car entry))) (+ (cadr entry) (caddr entry))];condition for addition
-        [(equal? "-" (symbol->string (car entry))) (- (cadr entry) (caddr entry))];conditions for subtraction
-        [(equal? "/" (symbol->string (car entry))) (/ (cadr entry) (caddr entry))];condition for division
-        [(equal? "*" (symbol->string (car entry))) (* (cadr entry) (caddr entry))];condition for multiplication
+        [(equal? "+" (symbol->string (car entry))) (write (+ (cadr entry) (caddr entry)))];condition for addition
+        [(equal? "-" (symbol->string (car entry))) (write (- (cadr entry) (caddr entry)))];conditions for subtraction
+        [(equal? "/" (symbol->string (car entry))) (write (/ (cadr entry) (caddr entry)))];condition for division
+        [(equal? "*" (symbol->string (car entry))) (write (* (cadr entry) (caddr entry)))];condition for multiplication
         ;RELATIONAL OPERATORS
-        [(equal? "=" (symbol->string (car entry))) (= (cadr entry) (caddr entry))]
-        [(equal? "<=" (symbol->string (car entry))) (<= (cadr entry) (caddr entry))]
-        [(equal? "<" (symbol->string (car entry))) (< (cadr entry) (caddr entry))]
-        [(equal? ">=" (symbol->string (car entry))) (>= (cadr entry) (caddr entry))]
-        [(equal? ">" (symbol->string (car entry))) (> (cadr entry) (caddr entry))]
+        [(equal? "=" (symbol->string (car entry))) (write (= (cadr entry) (caddr entry)))]
+        [(equal? "<=" (symbol->string (car entry))) (write (<= (cadr entry) (caddr entry)))]
+        [(equal? "<" (symbol->string (car entry))) (write (< (cadr entry) (caddr entry)))]
+        [(equal? ">=" (symbol->string (car entry))) (write (>= (cadr entry) (caddr entry)))]
+        [(equal? ">" (symbol->string (car entry))) (write (> (cadr entry) (caddr entry)))]
 
         ;TODO: CONSTANTS AND VARIABLES
         ;TODO: EQUAL? **
-        [(equal? "equal?" (symbol->string (car entry))) (equal? (cadr entry) (caddr entry))]
         
         #|TODO: LISTS |#
         ;CAR, CDR, CONS, PAIR?
-        [(equal? "car" (symbol->string (car entry))) (car (cadadr entry))]
-        [(equal? "cdr" (symbol->string (car entry))) (cdr (cadadr entry))]
-        [(equal? "pair?" (symbol->string (car entry))) (pair? (cdr entry))]
-        [(equal? "quote" (symbol->string (car entry))) (write entry)]
+        [(equal? "car" (symbol->string (car entry))) (listEval entry)]
+        [(equal? "cdr" (symbol->string (car entry))) (listEval entry)]
+        
 
         #|TODO: IF |#
 
@@ -58,8 +57,7 @@ COLE ANDERSON
         )
         
       
-      ;(write "INVALID");condition
-      (write entry)
+      (write "INVALID");condition
       ))
 
 ;LIST EVAL FUNCTION
