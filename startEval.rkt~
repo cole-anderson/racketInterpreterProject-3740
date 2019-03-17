@@ -69,7 +69,7 @@ COLE ANDERSON
      (if (list? (cadadr entry))
          (write (car (cadadr entry)))
      (write "test"))]
-    
+    ;doesnt work properly lol
     [(equal? "cdr" (symbol->string (car entry)))
      (if (list? (cadadr entry))
          (write (cdr (cadadr entry)))
