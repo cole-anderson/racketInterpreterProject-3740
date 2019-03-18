@@ -19,7 +19,9 @@ COLE ANDERSON
 (define (startEval entry)
   (if (list? entry) ;checks for valid input into program ie: (startEval '(entry))
       (cond
-        ;Checks for what operation is placed as the first element of input
+        ;TODO: CONSTANTS AND VARIABLES
+        
+        ;Checks for what operation is placed as the first element of entry
         ;ARITHMETIC OPERATORS:
         [(equal? "+" (symbol->string (car entry))) (+ (cadr entry) (caddr entry))];condition for addition
         [(equal? "-" (symbol->string (car entry))) (- (cadr entry) (caddr entry))];conditions for subtraction
@@ -32,7 +34,6 @@ COLE ANDERSON
         [(equal? ">=" (symbol->string (car entry))) (>= (cadr entry) (caddr entry))]
         [(equal? ">" (symbol->string (car entry))) (> (cadr entry) (caddr entry))]
 
-        ;TODO: CONSTANTS AND VARIABLES
         ;TODO: EQUAL? **
         [(equal? "equal?" (symbol->string (car entry))) (equal? (cadr entry) (caddr entry))]
         
@@ -44,6 +45,8 @@ COLE ANDERSON
         [(equal? "quote" (symbol->string (car entry))) (write entry)]
 
         #|TODO: IF |#
+        [(equal? "if" (symbol->string (car entry))) (ifEval entry)]
+        
 
         #|TODO: LAMBDA |#
         ;SINGLE EXPRESSION LAMBDA
@@ -61,6 +64,9 @@ COLE ANDERSON
       ;(write "INVALID");condition
       (write entry)
       ))
+;END MAIN
+
+;HELPER FUNCTIONS:
 
 ;LIST EVAL FUNCTION
 (define (listEval entry)
@@ -75,4 +81,23 @@ COLE ANDERSON
          (write (cdr (cadadr entry)))
      (write "test"))]
 
-    ));gonna have to nest this different to incorporate nested loops better. get test cases from nicole
+    ));gonna have to nest this different to incorporate nested loops better.
+
+;IF EVAL FUNCTION
+(define (ifEval entry)
+  (if (cadr entry);i think this is a "hack" i feel like howard wants more
+      (caddr entry)
+      (cadddr entry)))
+;Gotta ask howard if this is like "allowed"
+
+#|
+  ;Nest Read Test
+  (write (car entry));if
+  (write-char #\newline)
+  (write (cadr entry));conditions
+  (write-char #\newline)
+  (write (caddr entry));if true
+  (write-char #\newline)
+  (write (cadddr entry)));if false
+|#
+  
