@@ -43,7 +43,7 @@ COLE ANDERSON
         [(equal? "cdr" (symbol->string (car entry))) (cdr (cadadr entry))]
         [(equal? "pair?" (symbol->string (car entry))) (pair? (cdr entry))]
         [(equal? "quote" (symbol->string (car entry))) (write entry)]
-        ;^move to list eval function for recursion^ - cole
+        ;^move to list eval function for recursion^ - cole ** :) **
 
         #|TODO: IF |#
         [(equal? "if" (symbol->string (car entry))) (ifEval entry)]
@@ -81,7 +81,7 @@ COLE ANDERSON
 (define (listEval entry)
   (cond
     [(equal? "car" (symbol->string (car entry)))
-     (if (list? (cadadr entry))
+     (if (list? (cadadr entry)) ; recursively call listEval if second element list
          (write (car (cadadr entry)))
      (write "test"))]
 
@@ -101,6 +101,8 @@ COLE ANDERSON
       (cadddr entry)))
 ;Gotta ask howard if this is like "allowed"
 
+
+;Test Text Code:
 #|
   ;Nest Read Test
   (write (car entry));if
