@@ -43,6 +43,7 @@ COLE ANDERSON
         [(equal? "cdr" (symbol->string (car entry))) (cdr (cadadr entry))]
         [(equal? "pair?" (symbol->string (car entry))) (pair? (cdr entry))]
         [(equal? "quote" (symbol->string (car entry))) (write entry)]
+        ;^move to list eval function for recursion^ - cole
 
         #|TODO: IF |#
         [(equal? "if" (symbol->string (car entry))) (ifEval entry)]
@@ -68,7 +69,15 @@ COLE ANDERSON
 
 ;HELPER FUNCTIONS:
 
+;myEval
+;(myEval (entry table))
+
+
+
+
+
 ;LIST EVAL FUNCTION
+;(listEval entry)
 (define (listEval entry)
   (cond
     [(equal? "car" (symbol->string (car entry)))
@@ -84,7 +93,9 @@ COLE ANDERSON
     ));gonna have to nest this different to incorporate nested loops better.
 
 ;IF EVAL FUNCTION
+;(ifEval entry))
 (define (ifEval entry)
+
   (if (cadr entry);i think this is a "hack" i feel like howard wants more
       (caddr entry)
       (cadddr entry)))
