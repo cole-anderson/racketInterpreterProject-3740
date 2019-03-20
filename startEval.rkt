@@ -19,55 +19,69 @@ COLE ANDERSON
 (define (startEval entry)
   (if (list? entry) ;checks for valid input into program ie: (startEval '(entry))
       (cond
-        ;TODO: CONSTANTS AND VARIABLES
-
         ;Checks for what operation is placed as the first element of entry
-        ;ARITHMETIC OPERATORS:
+        ;and determines what the proper operation to execute
+
+        ;1)CONSTANTS AND VARIABLES: //90% : NEED: VARIABLES
+        [(number? (car entry))(write (car entry))]
+        ;if variable see below
+        [(equal? "quote" (symbol->string (car entry))) (write entry)]
+        
+        ;2)ARITHMETIC OPERATORS: //COMPLETE
         [(equal? "+" (symbol->string (car entry))) (+ (cadr entry) (caddr entry))];condition for addition
         [(equal? "-" (symbol->string (car entry))) (- (cadr entry) (caddr entry))];conditions for subtraction
         [(equal? "/" (symbol->string (car entry))) (/ (cadr entry) (caddr entry))];condition for division
         [(equal? "*" (symbol->string (car entry))) (* (cadr entry) (caddr entry))];condition for multiplication
-        ;RELATIONAL OPERATORS
+        ;3)RELATIONAL OPERATORS //90%
         [(equal? "=" (symbol->string (car entry))) (= (cadr entry) (caddr entry))]
         [(equal? "<=" (symbol->string (car entry))) (<= (cadr entry) (caddr entry))]
         [(equal? "<" (symbol->string (car entry))) (< (cadr entry) (caddr entry))]
         [(equal? ">=" (symbol->string (car entry))) (>= (cadr entry) (caddr entry))]
         [(equal? ">" (symbol->string (car entry))) (> (cadr entry) (caddr entry))]
-
-        ;TODO: EQUAL? **
+        ;TODO: EQUAL? **NEED TO SUPPORT MULT VALUES
         [(equal? "equal?" (symbol->string (car entry))) (equal? (cadr entry) (caddr entry))]
-
+        
         #|TODO: LISTS |#
-        ;CAR, CDR, CONS, PAIR?
+        ;4)LISTS: CAR, CDR, CONS, PAIR?
         [(equal? "car" (symbol->string (car entry))) (car (cadadr entry))]
         [(equal? "cdr" (symbol->string (car entry))) (cdr (cadadr entry))]
-        [(equal? "pair?" (symbol->string (car entry))) (pair? (cdr entry))]
-        [(equal? "quote" (symbol->string (car entry))) (write entry)]
+        ;finish pair? cons?
+        [(equal? "pair?" (symbol->string (car entry))) (pair? entry)]
+        ;cadr 1 caddr 2
+                                                                   
+        ;[(equal? "cons?" (symbol->string (car entry))) (cons?  entry)]
         ;^move to list eval function for recursion^ - cole ** :) **
 
+        
         #|TODO: IF |#
+        ;5) CONDITIONAL: IF
         [(equal? "if" (symbol->string (car entry))) (ifEval entry)]
 
 
         #|TODO: LAMBDA |#
-        ;SINGLE EXPRESSION LAMBDA
+        ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA
 
         #|TODO: FUNCTION APPLICATION |#
-        ;APPLYING LAMBDA EXP TO ARGS
+        ;7)FUNCTION APPLICATION: APPLYING LAMBDA EXP TO ARGS
 
         #|TODO: LOCAL BINDING |#
-        ;LET LETREC
+        ;8)LOCAL BINDING: LET LETREC
 
-        ;
+   
+        
+        
         )
 
+             
 
-      ;(write "INVALID");condition
-      (write entry)
-      ))
+
+      ;if input is not in form: startEval '(your input here)
+      (and(and (write "invalid input")(write-char #\newline))(write "Try: startEval '(your input here)")
+      )))
 ;END MAIN
 
-;HELPER FUNCTIONS:
+
+#|HELPER FUNCTIONS|#
 
 ;myEval
 ;(myEval (entry table))
@@ -78,6 +92,7 @@ COLE ANDERSON
 
 ;LIST EVAL FUNCTION
 ;(listEval entry)
+#|
 (define (listEval entry)
   (cond
     [(equal? "car" (symbol->string (car entry)))
@@ -91,17 +106,38 @@ COLE ANDERSON
      (write "test"))]
 
     ));gonna have to nest this different to incorporate nested loops better.
+|#
+;;;;;;;;;;;;;;;;;;
+(define (listEval entry)
+  (cond
+    [(equal? "car" (symbol->string (car entry)))
+     (if (list? (cadadr entry)) ; recursively call listEval if second element list
+         (write (car (cadadr entry)))
+     (write "test"))]
+
+    [(equal? "cdr" (symbol->string (car entry)))
+     (if (list? (cadadr entry))
+         (write (cdr (cadadr entry)))
+     (write "test"))]
+))  
+
+;;;;;;;;;;;;;;;;;;
+
+
+
 
 ;IF EVAL FUNCTION
 ;(ifEval entry))
 (define (ifEval entry)
+  (write (cdr entry)))
 
-  (if (cadr entry);i think this is a "hack" i feel like howard wants more
-      (caddr entry)
-      (cadddr entry)))
+
+
+;;GARBAGE TEST INFORMATION:
+  ;(if (cadr entry);i think this is a "hack" i feel like howard wants more
+      ;(caddr entry)
+      ;(cadddr entry)))
 ;Gotta ask howard if this is like "allowed"
-
-
 ;Test Text Code:
 #|
   ;Nest Read Test
@@ -113,3 +149,6 @@ COLE ANDERSON
   (write-char #\newline)
   (write (cadddr entry)));if false
 |#
+
+
+;END PROGRAM
