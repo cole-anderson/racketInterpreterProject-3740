@@ -23,8 +23,8 @@ COLE ANDERSON
         ;and determines what the proper operation to execute
 
         ;1)CONSTANTS AND VARIABLES: //90% : NEED: VARIABLES
-        [(number? (car entry))(write (car entry))]
-        ;if variable see below
+        [(number? (car entry)) (write entry)]
+        ;if variable see end of main
         [(equal? "quote" (symbol->string (car entry))) (write entry)]
         
         ;2)ARITHMETIC OPERATORS: //COMPLETE
