@@ -1,3 +1,4 @@
+
 #lang racket
 
 #|
@@ -19,11 +20,6 @@ COLE ANDERSON
 (define (startEval entry)
   (if (list? entry) ;checks for valid input into program ie: (startEval '(entry))
       (cond
-<<<<<<< HEAD
-        ;TODO: CONSTANTS AND VARIABLES
-
-=======
->>>>>>> refs/remotes/origin/master
         ;Checks for what operation is placed as the first element of entry
         ;and determines what the proper operation to execute
 
@@ -45,7 +41,7 @@ COLE ANDERSON
         [(equal? ">" (symbol->string (car entry))) (> (cadr entry) (caddr entry))]
         ;TODO: EQUAL? **NEED TO SUPPORT MULT VALUES
         [(equal? "equal?" (symbol->string (car entry))) (equal? (cadr entry) (caddr entry))]
-
+        
         #|TODO: LISTS |#
         ;4)LISTS: CAR, CDR, CONS, PAIR?
         [(equal? "car" (symbol->string (car entry))) (car (cadadr entry))]
@@ -67,24 +63,11 @@ COLE ANDERSON
         ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA
 
         #|TODO: FUNCTION APPLICATION |#
-<<<<<<< HEAD
-        ;APPLYING LAMBDA EXP TO ARGS
-=======
         ;7)FUNCTION APPLICATION: APPLYING LAMBDA EXP TO ARGS
->>>>>>> refs/remotes/origin/master
 
         #|TODO: LOCAL BINDING |#
         ;8)LOCAL BINDING: LET LETREC
 
-<<<<<<< HEAD
-        ;
-        )
-
-
-      ;(write "INVALID");condition
-      (write entry)
-      ))
-=======
    
         
         
@@ -96,7 +79,6 @@ COLE ANDERSON
       ;if input is not in form: startEval '(your input here)
       (and(and (write "invalid input")(write-char #\newline))(write "Try: startEval '(your input here)")
       )))
->>>>>>> refs/remotes/origin/master
 ;END MAIN
 
 
@@ -118,12 +100,10 @@ COLE ANDERSON
      (if (list? (cadadr entry)) ; recursively call listEval if second element list
          (write (car (cadadr entry)))
      (write "test"))]
-
     [(equal? "cdr" (symbol->string (car entry)))
      (if (list? (cadadr entry))
          (write (cdr (cadadr entry)))
      (write "test"))]
-
     ));gonna have to nest this different to incorporate nested loops better.
 |#
 ;;;;;;;;;;;;;;;;;;
@@ -148,16 +128,7 @@ COLE ANDERSON
 ;IF EVAL FUNCTION
 ;(ifEval entry))
 (define (ifEval entry)
-<<<<<<< HEAD
-  (if (cadr entry);i think this is a "hack" i feel like howard wants more
-      (caddr entry)
-      (cadddr entry)))
-;Gotta ask howard if this is like "allowed"
-;gotta check if list and if function
-;if function call starteval and if not just calculate
-=======
   (write (cdr entry)))
->>>>>>> refs/remotes/origin/master
 
 
 
@@ -177,9 +148,6 @@ COLE ANDERSON
   (write-char #\newline)
   (write (cadddr entry)));if false
 |#
-<<<<<<< HEAD
-=======
 
 
 ;END PROGRAM
->>>>>>> refs/remotes/origin/master
