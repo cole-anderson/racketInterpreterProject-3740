@@ -89,8 +89,6 @@ COLE ANDERSON
       (caddr entry)
       (cadddr entry)))
 ;Gotta ask howard if this is like "allowed"
-;gotta check if list and if function
-;if function call starteval and if not just calculate
 
 #|
   ;Nest Read Test
