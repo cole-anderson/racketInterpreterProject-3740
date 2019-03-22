@@ -24,7 +24,7 @@ COLE ANDERSON
         ;and determines what the proper operation to execute
 
         ;1)CONSTANTS AND VARIABLES: //90% : NEED: VARIABLES
-        [(number? (car entry)) (write entry)]
+        [(number? (car entry)) (car entry)]
         ;if variable see end of main
         [(equal? "quote" (symbol->string (car entry))) (write entry)]
         
@@ -128,7 +128,14 @@ COLE ANDERSON
 ;IF EVAL FUNCTION
 ;(ifEval entry))
 (define (ifEval entry)
-  (write (cdr entry)))
+  (if (startEval(cadr entry));calls starteval to evaluate function
+      (startEval (caddr entry));does this entry if true
+      (startEval (cadddr entry));does this entry if false
+))
+;NEST EVAL FUNCTION
+;(nestEval entry)
+(define (nestEval entry)
+  
 
 
 
