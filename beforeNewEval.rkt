@@ -43,10 +43,6 @@ COLE ANDERSON
         [(equal? "cdr" (symbol->string (car entry))) (cdr (cadadr entry))]
         [(equal? "pair?" (symbol->string (car entry))) (pair? (cdr entry))]
         [(equal? "quote" (symbol->string (car entry))) (write entry)]
-<<<<<<< HEAD
-=======
-        ;^move to list eval function for recursion^ - cole ** :) **
->>>>>>> refs/remotes/origin/master
 
         #|TODO: IF |#
         [(equal? "if" (symbol->string (car entry))) (ifEval entry)]
@@ -72,27 +68,11 @@ COLE ANDERSON
 
 ;HELPER FUNCTIONS:
 
-<<<<<<< HEAD
 ;LIST EVAL FUNCTION
 (define (listEval entry)
   (cond
     [(equal? "car" (symbol->string (car entry)))
      (if (list? (cadadr entry))
-=======
-;myEval
-;(myEval (entry table))
-
-
-
-
-
-;LIST EVAL FUNCTION
-;(listEval entry)
-(define (listEval entry)
-  (cond
-    [(equal? "car" (symbol->string (car entry)))
-     (if (list? (cadadr entry)) ; recursively call listEval if second element list
->>>>>>> refs/remotes/origin/master
          (write (car (cadadr entry)))
      (write "test"))]
 
@@ -104,23 +84,12 @@ COLE ANDERSON
     ));gonna have to nest this different to incorporate nested loops better.
 
 ;IF EVAL FUNCTION
-<<<<<<< HEAD
 (define (ifEval entry)
-=======
-;(ifEval entry))
-(define (ifEval entry)
-
->>>>>>> refs/remotes/origin/master
   (if (cadr entry);i think this is a "hack" i feel like howard wants more
       (caddr entry)
       (cadddr entry)))
 ;Gotta ask howard if this is like "allowed"
 
-<<<<<<< HEAD
-=======
-
-;Test Text Code:
->>>>>>> refs/remotes/origin/master
 #|
   ;Nest Read Test
   (write (car entry));if
