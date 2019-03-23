@@ -50,6 +50,7 @@ COLE ANDERSON
 
         #|TODO: LAMBDA |#
         ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA
+        [(equal? "let" (symbol->string (car entry))) (letEval entry)]
 
         #|TODO: FUNCTION APPLICATION |#
         ;7)FUNCTION APPLICATION: APPLYING LAMBDA EXP TO ARGS
@@ -86,10 +87,39 @@ COLE ANDERSON
   
 ;myEval
 ;(myEval (entry table))
+(define (letEval entry)
+  #|(write (caadr entry)) ;(y 5)
+  (write-char #\newline)
+  (write (caaadr entry)) ;y
+  (write-char #\newline)
+  (write (car (cdaadr entry))) ;5
+  (write-char #\newline)
+  (write (caddr entry)) ;x
+  |#
 
+
+  
+  ;(letrec ([(nestEval (caaadr entry)) 1]) (nestEval caaadr entry))
+ 
+  ;(nestEval (caaadr entry))
+ 
+  )
+;(startEval '(let ([y 5]) x))
+
+;nestEval
+(define (nestEval nest)
+  nest)
 
 
 ;END PROGRAM
+
+;;;;;copy paste stuff
+;(write-char #\newline)
+;(startEval '(let ([x 5]) x))
+
+
+
+
 
 
 ;;GARBAGE TEST INFORMATION:
