@@ -21,7 +21,7 @@ COLE ANDERSON
         ;Checks for what operation is placed as the first element of entry
         ;and determines what the proper operation to execute
 
-        ;1)CONSTANTS AND VARIABLES: //90% : is 'x fine?
+        ;1)CONSTANTS AND VARIABLES: //COMPLETE
         [(number? (car entry)) (entry)]
         [(equal? 'quote (car entry)) (write entry)]
         
@@ -45,8 +45,6 @@ COLE ANDERSON
         [(equal? 'cdr (car entry)) (cdr (cadadr entry))]
         [(equal? 'pair? (car entry)) (pair? (cadr entry))]                                                                   
         [(equal? 'cons (car entry)) (cons (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        ;**should i move this into a nested function nicole? -cole 
-
         
         ;5) CONDITIONAL: IF //COMPLETE
         [(equal? 'if (car entry)) (ifEval entry)]
@@ -54,15 +52,14 @@ COLE ANDERSON
 
         #|TODO: LAMBDA |#
         ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA
-        [(equal? 'let (car entry)) (SecondEval (caddr entry)  (append (cadr entry) stack))] ;(letEval (cdr entry))]
 
         #|TODO: FUNCTION APPLICATION |#
         ;7)FUNCTION APPLICATION: APPLYING LAMBDA EXP TO ARGS
 
         #|TODO: LOCAL BINDING |#
         ;8)LOCAL BINDING: LET LETREC
-
-   
+	[(equal? 'let (car entry)) (SecondEval (caddr entry)  (append (cadr entry) stack))] ;(letEval (cdr entry))]
+        ;letrec;
         
         
       )
