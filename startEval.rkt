@@ -23,38 +23,38 @@ COLE ANDERSON
 
         ;1)CONSTANTS AND VARIABLES: //90% : is 'x fine?
         [(number? (car entry)) (entry)]
-        [(equal? "quote" (symbol->string (car entry))) (write entry)]
+        [(equal? 'quote (car entry)) (write entry)]
         
         ;2)ARITHMETIC OPERATORS: //COMPLETE
-        [(equal? "+" (symbol->string (car entry))) (+ (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? "-" (symbol->string (car entry))) (- (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? "/" (symbol->string (car entry))) (/ (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? "*" (symbol->string (car entry))) (* (known? (cadr entry) stack) (known? (caddr entry) stack))]
+        [(equal? '+ (car entry)) (+ (known? (cadr entry) stack) (known? (caddr entry) stack))]
+        [(equal? '- (car entry)) (- (known? (cadr entry) stack) (known? (caddr entry) stack))]
+        [(equal? '/ (car entry)) (/ (known? (cadr entry) stack) (known? (caddr entry) stack))]
+        [(equal? '* (car entry)) (* (known? (cadr entry) stack) (known? (caddr entry) stack))]
         
         ;3)RELATIONAL OPERATORS //COMPLETE
-        [(equal? "=" (symbol->string (car entry))) (= (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? "<=" (symbol->string (car entry))) (<= (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? "<" (symbol->string (car entry))) (< (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? ">=" (symbol->string (car entry))) (>= (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? ">" (symbol->string (car entry))) (> (known? (cadr entry) stack) (known? (caddr entry) stack))]
+        [(equal? '= (car entry)) (= (known? (cadr entry) stack) (known? (caddr entry) stack))]
+        [(equal? '<= (car entry)) (<= (known? (cadr entry) stack) (known? (caddr entry) stack))]
+        [(equal? '< (car entry)) (< (known? (cadr entry) stack) (known? (caddr entry) stack))]
+        [(equal? '>= (car entry)) (>= (known? (cadr entry) stack) (known? (caddr entry) stack))]
+        [(equal? '> (car entry)) (> (known? (cadr entry) stack) (known? (caddr entry) stack))]
         ;**nicole is this right lmao -cole
-        [(equal? "equal?" (symbol->string (car entry))) (eqEval (cdr entry))]
+        [(equal? 'equal? (car entry)) (eqEval (cdr entry))]
         
         ;4)LISTS: CAR, CDR, CONS, PAIR? //COMPLETE
-        [(equal? "car" (symbol->string (car entry))) (car (cadadr entry))]
-        [(equal? "cdr" (symbol->string (car entry))) (cdr (cadadr entry))]
-        [(equal? "pair?" (symbol->string (car entry))) (pair? (cadr entry))]                                                                   
-        [(equal? "cons?" (symbol->string (car entry))) (cons?  entry)]
+        [(equal? 'car (car entry)) (car (cadadr entry))]
+        [(equal? 'cdr (car entry)) (cdr (cadadr entry))]
+        [(equal? 'pair? (car entry)) (pair? (cadr entry))]                                                                   
+        [(equal? 'cons (car entry)) (cons (known? (cadr entry) stack) (known? (caddr entry) stack))]
         ;**should i move this into a nested function nicole? -cole 
 
         
         ;5) CONDITIONAL: IF //COMPLETE
-        [(equal? "if" (symbol->string (car entry))) (ifEval entry)]
+        [(equal? 'if (car entry)) (ifEval entry)]
 
 
         #|TODO: LAMBDA |#
         ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA
-        [(equal? "let" (symbol->string (car entry))) (SecondEval (caddr entry)  (cadr entry))] ;(letEval (cdr entry))]
+        [(equal? 'let (car entry)) (SecondEval (caddr entry)  (append (cadr entry) stack))] ;(letEval (cdr entry))]
 
         #|TODO: FUNCTION APPLICATION |#
         ;7)FUNCTION APPLICATION: APPLYING LAMBDA EXP TO ARGS
