@@ -97,18 +97,12 @@ COLE ANDERSON
   (write (caddr entry)) ;x
   |#
 
-
-  
-  ;(letrec ([(nestEval (caaadr entry)) 1]) (nestEval caaadr entry))
- 
-  ;(nestEval (caaadr entry))
+  ;(let ([me "Bob"]) me)
+  (let ([{caaadr entry} 1])
+    {caaadr entry})
  
   )
 ;(startEval '(let ([y 5]) x))
-
-;nestEval
-(define (nestEval nest)
-  nest)
 
 
 ;END PROGRAM
