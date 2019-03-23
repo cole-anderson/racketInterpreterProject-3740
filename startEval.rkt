@@ -110,23 +110,15 @@ COLE ANDERSON
   (write (caddr entry)) ;x
   |#
 
-<<<<<<< HEAD:yauhmsure.rkt
-  ;(let ([me "Bob"]) me)
-  (let ([{caaadr entry} 1])
-    {caaadr entry})
-=======
 (myEval (cdr entry)  (Stacks (car entry)))
   
   ;(letrec ([(nestEval (caaadr entry)) 1]) (nestEval caaadr entry))
  
   ;(nestEval (caaadr entry))
->>>>>>> e6f9146aa334fdb221f74ebe966cedc7b88c0a5a:startEval.rkt
  
   )
 ;(startEval '(let ([y 5]) x))
 
-<<<<<<< HEAD:yauhmsure.rkt
-=======
 (define (myEval func stack)
   stack
   )
@@ -139,7 +131,6 @@ COLE ANDERSON
 (define (nestEval nest)
   nest)
 
->>>>>>> e6f9146aa334fdb221f74ebe966cedc7b88c0a5a:startEval.rkt
 
 ;END PROGRAM
 
