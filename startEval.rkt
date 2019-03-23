@@ -37,7 +37,6 @@ COLE ANDERSON
         [(equal? '< (car entry)) (< (known? (cadr entry) stack) (known? (caddr entry) stack))]
         [(equal? '>= (car entry)) (>= (known? (cadr entry) stack) (known? (caddr entry) stack))]
         [(equal? '> (car entry)) (> (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        ;**nicole is this right lmao -cole
         [(equal? 'equal? (car entry)) (eqEval (cdr entry))]
         
         ;4)LISTS: CAR, CDR, CONS, PAIR? //COMPLETE
@@ -52,7 +51,8 @@ COLE ANDERSON
 
         #|TODO: LAMBDA |#
         ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA
-
+        [(equal? 'lambda (caar entry)) (lamEval (cadar entry) (caddar entry) (cdr entry) stack)]
+        
         #|TODO: FUNCTION APPLICATION |#
         ;7)FUNCTION APPLICATION: APPLYING LAMBDA EXP TO ARGS
 
@@ -75,6 +75,34 @@ COLE ANDERSON
 ;(caar '((x 5) (y 3) (z 2))) = 'x
 ;(cdr '((x 5) (y 3) (z 2))) = '((y 3) (z 2))
 ;(cadar '((x 5) (y 3) (z 2))) = 5
+
+
+(define (lamEval entry1 entry2 parama stack)
+  #|
+(startEval '((lambda (x y)
+                 (- x y)) 1 2))
+|#
+  
+  ;(write (car entry)) ;(x y)
+  ;(write-char #\newline)
+  ;(write (cadr entry)) ;(- x y)
+  ;(write-char #\newline)
+  ;(write param) ;(1 2)
+(write entry1)
+  (write-char #\newline)
+  (write entry2)
+  (write-char #\newline)
+  (write parama)
+  ;((lambda (x y) entry2) 1 2);(car parama) (cdr parama))
+  ((lambda (x y) (- x y)) 1 2)
+  
+
+  
+  
+  )
+
+
+;KNOWN? FUNCTION
 (define (known? elem stack)
   (if (number? elem)
       elem
