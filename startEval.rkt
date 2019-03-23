@@ -54,7 +54,7 @@ COLE ANDERSON
 
         #|TODO: LAMBDA |#
         ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA
-        [(equal? "let" (symbol->string (car entry))) (letEval (cdr entry))]
+        [(equal? "let" (symbol->string (car entry))) (SecondEval (caddr entry)  (cadr entry))] ;(letEval (cdr entry))]
 
         #|TODO: FUNCTION APPLICATION |#
         ;7)FUNCTION APPLICATION: APPLYING LAMBDA EXP TO ARGS
@@ -67,7 +67,7 @@ COLE ANDERSON
         
       )
       ;else
-      entry
+      (known? entry stack)
       ;if input is not in form: startEval '(your input here)
       ;(and(and (write "invalid input")(write-char #\newline))(write "Try: startEval '(your input here)"))
       ))
@@ -97,40 +97,6 @@ COLE ANDERSON
 (define (eqEval entry)
   (equal? (startEval (car entry)) (startEval (cadr entry))))
 
-  
-;myEval
-;(myEval (entry table))
-(define (letEval entry)
-  #|(write (caadr entry)) ;(y 5)
-  (write-char #\newline)
-  (write (caaadr entry)) ;y
-  (write-char #\newline)
-  (write (car (cdaadr entry))) ;5
-  (write-char #\newline)
-  (write (caddr entry)) ;x
-  |#
-
-(myEval (cdr entry)  (Stacks (car entry)))
-  
-  ;(letrec ([(nestEval (caaadr entry)) 1]) (nestEval caaadr entry))
- 
-  ;(nestEval (caaadr entry))
- 
-  )
-;(startEval '(let ([y 5]) x))
-
-(define (myEval func stack)
-  stack
-  )
-
-(define (Stacks entries)
-  (cdr entries)
-  )
-
-;nestEval
-(define (nestEval nest)
-  nest)
-
 
 ;END PROGRAM
 
@@ -140,7 +106,7 @@ COLE ANDERSON
 
 
 
-
+;(startEval '(let ([y 5]) x))
 
 
 ;;GARBAGE TEST INFORMATION:
