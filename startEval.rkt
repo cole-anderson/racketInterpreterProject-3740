@@ -16,7 +16,8 @@ COLE ANDERSON
   )
 
 (define (SecondEval entry stack)
-  (if (list? entry) ;checks for valid input into program ie: (startEval '(entry))
+  (if (list? entry);checks for valid input into program ie: (startEval '(entry))
+      (and (and (and (write entry) (write stack)) (write-char #\newline))
       (cond
         ;Checks for what operation is placed as the first element of entry
         ;and determines what the proper operation to execute
@@ -51,18 +52,21 @@ COLE ANDERSON
 
         #|TODO: LAMBDA |#
         ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA
-        [(equal? 'lambda (caar entry)) (lamEval (cadar entry) (caddar entry) (cdr entry) stack)]
+        [(equal? 'lambda (car entry)) ]
+        ;[(equal? 'lambda (caar entry)) (lamEval (cadar entry) (caddar entry) (cdr entry) stack)]
         
         #|TODO: FUNCTION APPLICATION |#
         ;7)FUNCTION APPLICATION: APPLYING LAMBDA EXP TO ARGS
 
         #|TODO: LOCAL BINDING |#
         ;8)LOCAL BINDING: LET LETREC
-	[(equal? 'let (car entry)) (SecondEval (caddr entry)  (append (cadr entry) stack))] ;(letEval (cdr entry))]
+	[(equal? 'let (car entry)) (SecondEval (caddr entry)  (append (cadr entry) stack))]; (write (append (cadr entry) stack)))] ;(letEval (cdr entry))]
         ;letrec;
+
+        [(equal? 'write (car entry)) (write  (known? (cdr entry) stack))]
         
         
-      )
+      ))
       ;else
       (known? entry stack)
       ;if input is not in form: startEval '(your input here)
@@ -75,6 +79,12 @@ COLE ANDERSON
 ;(caar '((x 5) (y 3) (z 2))) = 'x
 ;(cdr '((x 5) (y 3) (z 2))) = '((y 3) (z 2))
 ;(cadar '((x 5) (y 3) (z 2))) = 5
+
+(define (process param act stack)
+  (if (or (null? param) (null? act))
+      stack
+     (append (process (cdr param) (cdr act) stack) (append (list (car param) (car act)) stack))))
+  
 
 
 (define (lamEval entry1 entry2 parama stack)
@@ -103,11 +113,21 @@ COLE ANDERSON
 
 
 ;KNOWN? FUNCTION
-(define (known? elem stack)
+(define (known2? elem stack)
   (if (number? elem)
       elem
       (if (equal? elem (caar stack))
           (cadar stack)
+          (known? elem (cdr stack)))))
+
+(define (known? elem stack)
+  (if (number? elem)
+      elem
+      (if (equal? elem (caar stack))
+          (if (pair? (cadar stack)) 
+              ;(write (cadar stack));
+              (SecondEval (cadar stack) stack)
+              (cadar stack))
           (known? elem (cdr stack)))))
 
 ;IF EVAL FUNCTION
@@ -131,7 +151,9 @@ COLE ANDERSON
 
 
 
-;(startEval '(let ([y 5]) x))
+;(startEval '(let ([y 5][x 3]) (let ([x 7]) (+ x y))))
+;(startEval '(lambda (x y) (+ x y)))
+;(startEval '(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y)))
 
 
 ;;GARBAGE TEST INFORMATION:
