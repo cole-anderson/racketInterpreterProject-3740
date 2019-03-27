@@ -52,7 +52,7 @@ COLE ANDERSON
 
         #|TODO: LAMBDA |#
         ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA
-        [(equal? 'lambda (car entry)) ]
+        [(equal? 'lambda (car entry)) (SecondEval(caddr entry) stack)]
         ;[(equal? 'lambda (caar entry)) (lamEval (cadar entry) (caddar entry) (cdr entry) stack)]
         
         #|TODO: FUNCTION APPLICATION |#
@@ -64,6 +64,7 @@ COLE ANDERSON
         ;letrec;
 
         [(equal? 'write (car entry)) (write  (known? (cdr entry) stack))]
+        [(list? (car entry)) (SecondEval (car entry) (process (cadar entry) (cdr entry) stack))]
         
         
       ))
@@ -83,7 +84,7 @@ COLE ANDERSON
 (define (process param act stack)
   (if (or (null? param) (null? act))
       stack
-     (append (process (cdr param) (cdr act) stack) (append (list (car param) (car act)) stack))))
+     (append (process (cdr param) (cdr act) stack) (append (list (list (car param) (car act))) stack))))
   
 
 
@@ -129,6 +130,16 @@ COLE ANDERSON
               (SecondEval (cadar stack) stack)
               (cadar stack))
           (known? elem (cdr stack)))))
+
+(define (known1? elem stack)
+  (if (number? elem)
+      elem
+      (if (equal? elem (car stack))
+          (if (pair? (cadr stack)) 
+              ;(write (cadar stack));
+              (SecondEval (cadr stack) stack)
+              (cadr stack))
+          (known? elem (cddr stack)))))
 
 ;IF EVAL FUNCTION
 ;(ifEval entry))
