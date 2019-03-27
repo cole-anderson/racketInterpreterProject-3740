@@ -65,6 +65,7 @@ COLE ANDERSON
 
         [(equal? 'write (car entry)) (write  (known? (cdr entry) stack))]
         [(list? (car entry)) (SecondEval (car entry) (process (cadar entry) (cdr entry) stack))]
+        [(list? entry) (SecondEval (car entry) (process (cadr (knownfunc? (car entry) stack)) (cdr entry) stack))]
         
         
       ))
@@ -131,6 +132,13 @@ COLE ANDERSON
               (cadar stack))
           (known? elem (cdr stack)))))
 
+(define (knownfunc? elem stack)
+  (if (number? elem)
+      elem
+      (if (equal? elem (caar stack))
+          (cadar stack)
+          (knownfunc? elem (cdr stack)))))
+
 (define (known1? elem stack)
   (if (number? elem)
       elem
@@ -165,6 +173,7 @@ COLE ANDERSON
 ;(startEval '(let ([y 5][x 3]) (let ([x 7]) (+ x y))))
 ;(startEval '(lambda (x y) (+ x y)))
 ;(startEval '(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y)))
+; (startEval'(let ((inc(lambda (x) (+ x (quote 1)))))(inc (quote 5))))
 
 
 ;;GARBAGE TEST INFORMATION:
