@@ -24,27 +24,27 @@ COLE ANDERSON
 
         ;1)CONSTANTS AND VARIABLES: //COMPLETE
         [(number? (car entry)) (entry)]
-        [(equal? 'quote (car entry)) (write entry)]
+        [(equal? 'quote (car entry)) (cadr entry)]
         
         ;2)ARITHMETIC OPERATORS: //COMPLETE
-        [(equal? '+ (car entry)) (+ (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? '- (car entry)) (- (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? '/ (car entry)) (/ (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? '* (car entry)) (* (known? (cadr entry) stack) (known? (caddr entry) stack))]
+        [(equal? '+ (car entry)) (+ (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '- (car entry)) (- (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '/ (car entry)) (/ (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '* (car entry)) (* (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
         
         ;3)RELATIONAL OPERATORS //COMPLETE
-        [(equal? '= (car entry)) (= (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? '<= (car entry)) (<= (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? '< (car entry)) (< (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? '>= (car entry)) (>= (known? (cadr entry) stack) (known? (caddr entry) stack))]
-        [(equal? '> (car entry)) (> (known? (cadr entry) stack) (known? (caddr entry) stack))]
+        [(equal? '= (car entry)) (= (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '<= (car entry)) (<= (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '< (car entry)) (< (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '>= (car entry)) (>= (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '> (car entry)) (> (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
         [(equal? 'equal? (car entry)) (eqEval (cdr entry))]
         
         ;4)LISTS: CAR, CDR, CONS, PAIR? //COMPLETE
         [(equal? 'car (car entry)) (car (cadadr entry))]
         [(equal? 'cdr (car entry)) (cdr (cadadr entry))]
         [(equal? 'pair? (car entry)) (pair? (cadr entry))]                                                                   
-        [(equal? 'cons (car entry)) (cons (known? (cadr entry) stack) (known? (caddr entry) stack))]
+        [(equal? 'cons (car entry)) (cons (known? (cadr entry) stack) (SecondEval (caddr entry) stack))]
         
         ;5) CONDITIONAL: IF //COMPLETE
         [(equal? 'if (car entry)) (ifEval entry)]
@@ -63,13 +63,14 @@ COLE ANDERSON
 	[(equal? 'let (car entry)) (SecondEval (caddr entry)  (append (cadr entry) stack))]; (write (append (cadr entry) stack)))] ;(letEval (cdr entry))]
         ;letrec;
 
-        [(equal? 'write (car entry)) (write  (known? (cdr entry) stack))]
+        [(equal? 'write (car entry)) (write  (SecondEval (cdr entry) stack))]
         [(list? (car entry)) (SecondEval (car entry) (process (cadar entry) (cdr entry) stack))]
         [(list? entry) (SecondEval (car entry) (process (cadr (knownfunc? (car entry) stack)) (cdr entry) stack))]
         
         
       ))
       ;else
+      ;entry
       (known? entry stack)
       ;if input is not in form: startEval '(your input here)
       ;(and(and (write "invalid input")(write-char #\newline))(write "Try: startEval '(your input here)"))
@@ -125,12 +126,14 @@ COLE ANDERSON
 (define (known? elem stack)
   (if (number? elem)
       elem
-      (if (equal? elem (caar stack))
-          (if (pair? (cadar stack)) 
-              ;(write (cadar stack));
-              (SecondEval (cadar stack) stack)
-              (cadar stack))
-          (known? elem (cdr stack)))))
+      (if (null? stack)
+          elem
+          (if (equal? elem (caar stack))
+              (if (pair? (cadar stack)) 
+                  ;(write (cadar stack));
+                  (SecondEval (cadar stack) stack)
+                  (cadar stack))
+              (known? elem (cdr stack))))))
 
 (define (knownfunc? elem stack)
   (if (number? elem)
@@ -174,6 +177,8 @@ COLE ANDERSON
 ;(startEval '(lambda (x y) (+ x y)))
 ;(startEval '(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y)))
 ; (startEval'(let ((inc(lambda (x) (+ x (quote 1)))))(inc (quote 5))))
+
+;(startEval '(+ (quote 5) (quote 3)))
 
 
 ;;GARBAGE TEST INFORMATION:
