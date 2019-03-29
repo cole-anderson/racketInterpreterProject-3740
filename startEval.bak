@@ -17,42 +17,42 @@ COLE ANDERSON
 
 (define (SecondEval entry stack)
   (if (list? entry);checks for valid input into program ie: (startEval '(entry))
-      (and (and (and (and (write entry) (write stack)) (write-char #\newline))) (let ([operator (known? (car entry) stack)]) (let ([entry (list operator (cdr entry))])
+      (and (and (and (write entry) (write stack)) (write-char #\newline))
       (cond
         ;Checks for what operation is placed as the first element of entry
         ;and determines what the proper operation to execute
 
         ;1)CONSTANTS AND VARIABLES: //COMPLETE
-        [(number? operator) (entry)]
-        [(equal? 'quote operator) (cadr entry)]
+        [(number? (car entry)) (entry)]
+        [(equal? 'quote (car entry)) (cadr entry)]
         
         ;2)ARITHMETIC OPERATORS: //COMPLETE
-        [(equal? '+ operator) (+ (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
-        [(equal? '- operator) (- (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
-        [(equal? '/ operator) (/ (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
-        [(equal? '* operator) (* (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '+ (car entry)) (+ (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '- (car entry)) (- (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '/ (car entry)) (/ (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '* (car entry)) (* (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
         
         ;3)RELATIONAL OPERATORS //COMPLETE
-        [(equal? '= operator) (= (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
-        [(equal? '<= operator) (<= (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
-        [(equal? '< operator) (< (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
-        [(equal? '>= operator) (>= (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
-        [(equal? '> operator) (> (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
-        [(equal? 'equal? operator) (eqEval (cdr entry))]
+        [(equal? '= (car entry)) (= (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '<= (car entry)) (<= (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '< (car entry)) (< (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '>= (car entry)) (>= (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? '> (car entry)) (> (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? 'equal? (car entry)) (eqEval (cdr entry))]
         
         ;4)LISTS: CAR, CDR, CONS, PAIR? //COMPLETE
-        [(equal? 'car operator) (car (cadadr entry))]
-        [(equal? 'cdr operator) (cdr (cadadr entry))]
-        [(equal? 'pair? operator) (pair? (cadr entry))]                                                                   
-        [(equal? 'cons operator) (cons (known? (cadr entry) stack) (SecondEval (caddr entry) stack))]
+        [(equal? 'car (car entry)) (car (cadadr entry))]
+        [(equal? 'cdr (car entry)) (cdr (cadadr entry))]
+        [(equal? 'pair? (car entry)) (pair? (cadr entry))]                                                                   
+        [(equal? 'cons (car entry)) (cons (known? (cadr entry) stack) (SecondEval (caddr entry) stack))]
         
         ;5) CONDITIONAL: IF //COMPLETE
-        [(equal? 'if operator) (ifEval entry)]
+        [(equal? 'if (car entry)) (ifEval entry)]
 
 
         #|TODO: LAMBDA |#
         ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA
-        [(equal? 'lambda operator) (SecondEval(caddr entry) (process (cadar entry) (cdr entry) stack))]
+        [(equal? 'lambda (car entry)) (SecondEval(caddr entry) stack)]
         ;[(equal? 'lambda (caar entry)) (lamEval (cadar entry) (caddar entry) (cdr entry) stack)]
         
         #|TODO: FUNCTION APPLICATION |#
@@ -60,15 +60,15 @@ COLE ANDERSON
 
         #|TODO: LOCAL BINDING |#
         ;8)LOCAL BINDING: LET LETREC
-	[(equal? 'let operator) (SecondEval (cadadr entry)  (append (caaadr entry) stack))]; (write (append (cadr entry) stack)))] ;(letEval (cdr entry))]
+	[(equal? 'let (car entry)) (SecondEval (caddr entry)  (append (cadr entry) stack))]; (write (append (cadr entry) stack)))] ;(letEval (cdr entry))]
         ;letrec;
 
-        ;[(equal? 'write operator) (write  (SecondEval (cdr entry) stack))]
-        [(list? operator) (SecondEval operator (process (cadar entry) (cdr entry) stack))]
-        [(list? entry) (SecondEval operator (and (process (cadar entry) (cdr entry) stack) (process (cadr (knownfunc? operator stack)) (cdr entry) stack)))]
+        [(equal? 'write (car entry)) (write  (SecondEval (cdr entry) stack))]
+        [(list? (car entry)) (SecondEval (car entry) (process (cadar entry) (cdr entry) stack))]
+        [(list? entry) (SecondEval (car entry) (process (cadr (knownfunc? (car entry) stack)) (cdr entry) stack))]
         
         
-      ))))
+      ))
       ;else
       ;entry
       (known? entry stack)
@@ -179,7 +179,6 @@ COLE ANDERSON
 ; (startEval'(let ((inc(lambda (x) (+ x (quote 1)))))(inc (quote 5))))
 
 ;(startEval '(+ (quote 5) (quote 3)))
-;(startEval '(let ([+ *]) (+ 3 4)))
 
 
 ;;GARBAGE TEST INFORMATION:
