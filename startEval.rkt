@@ -64,6 +64,7 @@ COLE ANDERSON
         ;8)LOCAL BINDING: LET LETREC
 	[(equal? 'let operator) (SecondEval (caddr entry)  (append (cadr entry) stack))]
         ;letrec;
+        [(equal? 'letrec operator) (SecondEval (caddr entry) (append (list (list (caaadr entry) 'UNDEF) (caadr entry)) stack))]
 
         ;[(equal? 'write operator) (write  (SecondEval (cdr entry) stack))]
         [(list? operator) (if (pair? (caar entry))
