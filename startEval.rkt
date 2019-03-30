@@ -52,19 +52,23 @@ COLE ANDERSON
 
         #|TODO: LAMBDA |#
         ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA
-        [(equal? 'lambda operator) (SecondEval(caddr entry) stack)]
-        ;[(equal? 'lambda (caar entry)) (lamEval (cadar entry) (caddar entry) (cdr entry) stack)]
+        [(equal? 'lambda operator) (if (find (cadr entry) stack)
+                                       (SecondEval(caddr entry) stack)
+                                       (write 'function))] ; assumes lambda will be called only as itself or
+                                                           ; that it is a function call if formal params are in stack
         
         #|TODO: FUNCTION APPLICATION |#
         ;7)FUNCTION APPLICATION: APPLYING LAMBDA EXP TO ARGS
 
         #|TODO: LOCAL BINDING |#
         ;8)LOCAL BINDING: LET LETREC
-	[(equal? 'let operator) (SecondEval (caddr entry)  (append (cadr entry) stack))]; (write (append (cadr entry) stack)))] ;(letEval (cdr entry))]
+	[(equal? 'let operator) (SecondEval (caddr entry)  (append (cadr entry) stack))]
         ;letrec;
 
         ;[(equal? 'write operator) (write  (SecondEval (cdr entry) stack))]
-        [(list? operator) (SecondEval operator (process (cadar entry) (cdr entry) stack))]
+        [(list? operator) (if (pair? (caar entry))
+                              (SecondEval (list (caddaar entry) (cadar entry)) (process (cadaar entry) (cdr entry) stack))
+                              (SecondEval operator (process (cadar entry) (cdr entry) stack)))]
         [(list? entry) (SecondEval operator (process (cadr (knownfunc? operator stack)) (cdr entry) stack))]
         
         
@@ -113,6 +117,17 @@ COLE ANDERSON
   
   
   )
+
+(define (caddaar func) (car (cddaar func)))
+
+(define (find elem stack)
+  (if (number? elem)
+      #t
+      (if (null? stack)
+          #f
+      (if (equal? elem (caar stack))
+          #t
+          (known? elem (cdr stack))))))
 
 
 ;KNOWN? FUNCTION
@@ -178,7 +193,7 @@ COLE ANDERSON
 ;(startEval '(let ([y 5][x 3]) (let ([x 7]) (+ x y))))
 ;(startEval '(lambda (x y) (+ x y)))
 ;(startEval '(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y)))
-; (startEval'(let ((inc(lambda (x) (+ x (quote 1)))))(inc (quote 5))))
+;(startEval '(let ((inc(lambda (x) (+ x (quote 1)))))(inc (quote 5))))
 ;(startEval '(((lambda (x) (lambda (y) (+ x y))) 1) 2))
 
 ;(startEval '(+ (quote 5) (quote 3)))
