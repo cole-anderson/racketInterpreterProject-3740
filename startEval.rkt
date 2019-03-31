@@ -17,13 +17,14 @@ COLE ANDERSON
 
 (define (SecondEval entry2 stack)
   (if (list? entry2);checks for valid input into program ie: (startEval '(entry))
-      (and (and (and (and (write entry2) (write stack)) (write-char #\newline))) (let ([operator (known2? (car entry2) stack)]) (let ([entry (append (list operator) (cdr entry2))])
+      ;(and (and (and (and (write entry2) (writeln stack)) (write-char #\newline))) (let ([operator (known2? (car entry2) stack)]) (let ([entry (append (list operator) (cdr entry2))])
+      (let ([operator (known2? (car entry2) stack)]) (let ([entry (append (list operator) (cdr entry2))])
       (cond
         ;Checks for what operation is placed as the first element of entry
         ;and determines what the proper operation to execute
 
         ;1)CONSTANTS AND VARIABLES: //COMPLETE
-        [(number? operator) (entry)]
+        [(number? operator) operator]
         [(equal? 'quote operator) (cadr entry)]
         
         ;2)ARITHMETIC OPERATORS: //COMPLETE
@@ -47,7 +48,7 @@ COLE ANDERSON
         [(equal? 'cons operator) (cons (known? (cadr entry) stack) (SecondEval (caddr entry) stack))]
         
         ;5) CONDITIONAL: IF //COMPLETE
-        [(equal? 'if operator) (ifEval entry)]
+        [(equal? 'if operator) (ifEval entry stack)]
 
 
         #|TODO: LAMBDA |#
@@ -64,16 +65,19 @@ COLE ANDERSON
         ;8)LOCAL BINDING: LET LETREC
 	[(equal? 'let operator) (SecondEval (caddr entry)  (append (cadr entry) stack))]
         ;letrec;
-        [(equal? 'letrec operator) (SecondEval (caddr entry) (append (list (list (caaadr entry) 'UNDEF) (caadr entry)) stack))]
+        [(equal? 'letrec operator) (SecondEval (caddr entry) (append (cadr entry) stack))];(list (list (caaadr entry) 'UNDEF) (caadr entry)) stack))]
 
         ;[(equal? 'write operator) (write  (SecondEval (cdr entry) stack))]
         [(list? operator) (if (pair? (caar entry))
                               (SecondEval (list (caddaar entry) (cadar entry)) (process (cadaar entry) (cdr entry) stack))
                               (SecondEval operator (process (cadar entry) (cdr entry) stack)))]
-        [(list? entry) (SecondEval operator (process (cadr (knownfunc? operator stack)) (cdr entry) stack))]
+                               ; cadar entry = formal parameters
+                               ; cdr entry = list of actual parameters
+        ;[(list? entry) (SecondEval operator (process (cadr (knownfunc? operator stack)) (cdr entry) stack))]
+        [(list? entry) (known? operator stack)]
         
         
-      ))))
+      )))
       ;else
       ;entry
       (known? entry2 stack)
@@ -91,7 +95,19 @@ COLE ANDERSON
 (define (process param act stack)
   (if (or (null? param) (null? act))
       stack
-     (append (process (cdr param) (cdr act) stack) (append (list (list (car param) (car act))) stack))))
+     (append (list (list (car param) (SecondEval (car act) stack))) (append (process3 (cdr param) (cdr act) '()) stack))))
+
+(define (process3 param act stack)
+  (if (or (null? param) (null? act))
+      stack
+     (append (append (list (list (car param) (SecondEval (car act) stack))) (process3 (cdr param) (cdr act) stack)) stack)))
+
+(define (Evaluate List)
+  (if (null? List)
+      List
+      (append (list (list (caar List) (SecondEval (cdar List) List))) (Evaluate (cdr List) List))))
+
+; (Evaluate '((x 1) (y (- z 2))) '((z 9))) => '((x 1) (y 7) (z 9))
   
 
 
@@ -137,9 +153,9 @@ COLE ANDERSON
       elem
       (if (null? stack)
           elem
-      (if (equal? elem (caar stack))
-          (cadar stack)
-          (known? elem (cdr stack))))))
+          (if (equal? elem (caar stack))
+              (cadar stack)
+              (known2? elem (cdr stack))))))
 
 (define (known? elem stack)
   (if (number? elem)
@@ -172,10 +188,10 @@ COLE ANDERSON
 
 ;IF EVAL FUNCTION
 ;(ifEval entry))
-(define (ifEval entry)
-  (if (startEval(cadr entry));calls starteval to evaluate function
-      (startEval (caddr entry));does this entry if true
-      (startEval (cadddr entry))));does this entry if false
+(define (ifEval entry stack)
+  (if (SecondEval (cadr entry) stack) ;calls starteval to evaluate function
+      (SecondEval (caddr entry) stack) ;does this entry if true
+      (SecondEval (cadddr entry) stack))) ;does this entry if false
 
 ;EQUAL EVAL FUNCTION
 ;(eqEval entry)
@@ -196,9 +212,12 @@ COLE ANDERSON
 ;(startEval '(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y)))
 ;(startEval '(let ((inc(lambda (x) (+ x (quote 1)))))(inc (quote 5))))
 ;(startEval '(((lambda (x) (lambda (y) (+ x y))) 1) 2))
+;(startEval '(letrec ((fact (lambda (x) (if (= x 0) (quote 1) (* x (fact (- x 1))))))) (fact 10)))
 
 ;(startEval '(+ (quote 5) (quote 3)))
 ;(startEval '(let ([+ *]) (+ 3 4)))
+;(SecondEval '(letrec ((fact (lambda (x) (if (= x 0) (quote 1) (* 3 (- x 1)))))) (fact 3)) '((* +)))
+;(startEval '(let ([e 5][! *]) (! e e)))
 
 
 ;;GARBAGE TEST INFORMATION:
