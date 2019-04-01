@@ -17,7 +17,7 @@ COLE ANDERSON
 
 (define (SecondEval entry2 stack)
   (if (list? entry2);checks for valid input into program ie: (startEval '(entry))
-      ;(and (and (and (and (write entry2) (writeln stack)) (write-char #\newline))) (let ([operator (known2? (car entry2) stack)]) (let ([entry (append (list operator) (cdr entry2))])
+     ; (and (and (and (and (write entry2) (writeln stack)) (write-char #\newline))) (let ([operator (known2? (car entry2) stack)]) (let ([entry (append (list operator) (cdr entry2))])
       (let ([operator (known2? (car entry2) stack)]) (let ([entry (append (list operator) (cdr entry2))])
       (cond
         ;Checks for what operation is placed as the first element of entry
@@ -39,12 +39,18 @@ COLE ANDERSON
         [(equal? '< operator) (< (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
         [(equal? '>= operator) (>= (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
         [(equal? '> operator) (> (SecondEval (cadr entry) stack) (SecondEval (caddr entry) stack))]
-        [(equal? 'equal? operator) (eqEval (cdr entry))]
+        [(equal? 'equal? operator) (eqEval (cdr entry) stack)]
         
         ;4)LISTS: CAR, CDR, CONS, PAIR? //COMPLETE
-        [(equal? 'car operator) (car (cadadr entry))]
-        [(equal? 'cdr operator) (cdr (cadadr entry))]
-        [(equal? 'pair? operator) (pair? (cadr entry))]                                                                   
+        ;[(equal? 'car operator) (car (cadadr entry))]
+        ;[(equal? 'cdr operator) (cdr (cadadr entry))]
+        ;[(equal? 'pair? operator) (pair? (cadr entry))]
+
+        [(equal? 'car operator) (car (known2? (cdr entry) stack))]
+        [(equal? 'cdr operator) (cdr (known2? (cdr entry) stack))]
+        [(equal? 'pair? operator) (pair? (known2? (cdr entry) stack))]
+
+        
         [(equal? 'cons operator) (cons (known? (cadr entry) stack) (SecondEval (caddr entry) stack))]
         
         ;5) CONDITIONAL: IF //COMPLETE
@@ -77,7 +83,7 @@ COLE ANDERSON
         [(list? entry) (known? operator stack)]
         
         
-      )))
+      ))) ;)))
       ;else
       ;entry
       (known? entry2 stack)
@@ -111,28 +117,10 @@ COLE ANDERSON
   
 
 
-(define (lamEval entry1 entry2 parama stack)
-  #|
-(startEval '((lambda (x y)
-                 (- x y)) 1 2))
-|#
+(define (carcdrEval entry stack)
+(write "a")
   
-  ;(write (car entry)) ;(x y)
-  ;(write-char #\newline)
-  ;(write (cadr entry)) ;(- x y)
-  ;(write-char #\newline)
-  ;(write param) ;(1 2)
-(write entry1)
-  (write-char #\newline)
-  (write entry2)
-  (write-char #\newline)
-  (write parama)
-  ;((lambda (x y) entry2) 1 2);(car parama) (cdr parama))
-  ((lambda (x y) (- x y)) 1 2)
-  
-
-  
-  
+   
   )
 
 (define (caddaar func) (car (cddaar func)))
@@ -195,11 +183,176 @@ COLE ANDERSON
 
 ;EQUAL EVAL FUNCTION
 ;(eqEval entry)
-(define (eqEval entry)
-  (equal? (startEval (car entry)) (startEval (cadr entry))))
+(define (eqEval entry stack)
+  (equal? (SecondEval (car entry) stack) (SecondEval (cadr entry) stack)))
 
 
 ;END PROGRAM
+
+
+;Success: A B C D F G
+;Fail: E H
+
+(write "Test A")
+ (startEval
+ '(let ((inc
+         (lambda (x) (+ x (quote 1)))))
+        (inc (quote 5)))
+ )
+
+(print "should be 6")
+(newline)
+
+(write "Test B")
+(startEval
+ '(letrec ((fact
+           (lambda (x)
+	     (if (= x 0) (quote 1)
+		(* x (fact (- x 1)))))))
+	  (fact 10)))
+(print "should be 3628800")
+(newline)
+
+(write "Test C")
+ (startEval
+  '(letrec ((fib
+            (lambda (n) (if (<= n 1) 1 (+ (fib (- n 1)) (fib (- n 2)))))))
+	   
+           (fib 7))
+ )
+(print "should be 21")
+(newline)
+
+(write "Test D")
+(startEval '(
+              (
+                (lambda (x) (lambda (y) (+ x y)))
+                1
+              )
+              2
+            )
+ )
+
+(print "should be 3")
+(newline)
+
+(write "Test E")
+(startEval '(let ((+ (lambda (x) (cdr x)))
+                   (- '(1 2 3 4 5)))
+               (+ -))
+ )
+
+(print "should be (2 3 4 5)")
+(newline)
+(write "Test F")
+(startEval (let ([sub1 (lambda (x) (- x 1))]
+                  [not (lambda (x) (if x #f #t))])
+                  
+              
+              (letrec ([is-even? (lambda (n)
+                                   (if (= n '0)
+                                       #t
+                                       (is-odd? (sub1 n))))]
+                       [is-odd? (lambda (n)
+                                  (if (not (= n '0))
+                                      (is-even? (sub1 n))
+                                      '#f
+                                      ))])
+                (is-odd? 11))))
+(print "should be true")
+(newline)
+
+(write "Test G")
+(startEval
+ '(letrec ((fact
+           (lambda (x)
+	     (if (= x 0) (quote 1)
+		(* x (fact (- x 1)))))))
+	  (fact 10))
+ )
+(print "should be 3628800")
+(newline)
+(write "Test H")
+(startEval
+  '(let ((y 10))
+     (let ((f (lambda (x) (+ x y))))
+       (let ((y 100))
+         (f 2)))))
+(print "should be 12")
+(newline)
+(newline)
+(newline)
+
+(write "ourTest1:")
+(startEval '(let ([y 5][x 3]) (let ([x 7]) (+ x y))))
+(write "Expected")(let ([y 5][x 3]) (let ([x 7]) (+ x y)))
+(write "ourTest2:")
+(startEval '(lambda (x y) (+ x y)))
+(write "Expected")(lambda (x y) (+ x y))
+;This ones broken:
+;(write "ourTest3:")
+;(startEval '(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y)))
+(write "Expected")(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y))
+(write "ourTest4:")
+(startEval '(let ((inc(lambda (x) (+ x (quote 1)))))(inc (quote 5))))
+(write "Expected")(let ((inc(lambda (x) (+ x (quote 1)))))(inc (quote 5)))
+(write "ourTest5:")
+(startEval '(((lambda (x) (lambda (y) (+ x y))) 1) 2))
+(write "Expected")(((lambda (x) (lambda (y) (+ x y))) 1) 2)
+(write "ourTest6:")
+(startEval '(letrec ((fact (lambda (x) (if (= x 0) (quote 1) (* x (fact (- x 1))))))) (fact 10)))
+(write "Expected")(letrec ((fact (lambda (x) (if (= x 0) (quote 1) (* x (fact (- x 1))))))) (fact 10))
+(write "ourTest7:")
+(startEval '(+ (quote 5) (quote 3)))
+(write "Expected")(+ (quote 5) (quote 3))
+(write "ourTest8:")
+(startEval '(let ([+ *]) (+ 3 4)))
+(write "Expected")(let ([+ *]) (+ 3 4))
+(write "ourTest9:")
+(startEval '(let ([e 5][! *]) (! e e)))
+(write "Expected")(let ([e 5][! *]) (! e e))
+
+#|
+(write "Test BROKEN ONE THAT CAN GO TO HELL")
+(startEval
+  '(letrec ((intersect
+             (lambda (s t) 
+               (if (equal? s (quote ()))
+                 (quote ())
+                 (if (member (car s) t)
+                   (cons (car s) (intersect (cdr s) t))
+                   (intersect (cdr s) t)
+                 )
+               )
+              ))
+             (member
+	      (lambda (x s)
+                 (if (equal? s (quote ()))
+                   (quote #f)
+                   (if (equal? x (car s))
+                     (quote #t)
+                     (member x (cdr s))
+                   )
+	         )
+              )
+	     ))
+           (intersect (quote (a b c d)) (quote (b c d e f)))
+    )
+ )
+|#
+
+
+
+
+
+
+
+
+
+
+
+;-------------------------------------------------
+;DELETE ALL AFTER THIS:
 
 ;;;;;copy paste stuff
 ;(write-char #\newline)
