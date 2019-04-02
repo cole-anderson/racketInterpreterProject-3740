@@ -17,7 +17,7 @@ COLE ANDERSON
 
 (define (SecondEval entry2 stack)
   (if (list? entry2);checks for valid input into program ie: (startEval '(entry))
-     ; (and (and (and (and (write entry2) (writeln stack)) (write-char #\newline))) (let ([operator (known2? (car entry2) stack)]) (let ([entry (append (list operator) (cdr entry2))])
+      ;(and (and (and (and (write entry2) (writeln stack)) (write-char #\newline))) (let ([operator (known3? (car entry2) stack)]) (let ([entry (append (list operator) (cdr entry2))])
       (let ([operator (known2? (car entry2) stack)]) (let ([entry (append (list operator) (cdr entry2))])
       (cond
         ;Checks for what operation is placed as the first element of entry
@@ -46,8 +46,8 @@ COLE ANDERSON
         ;[(equal? 'cdr operator) (cdr (cadadr entry))]
         ;[(equal? 'pair? operator) (pair? (cadr entry))]
 
-        [(equal? 'car operator) (car (known2? (cdr entry) stack))]
-        [(equal? 'cdr operator) (cdr (known2? (cdr entry) stack))]
+        [(equal? 'car operator) (if (list? cadr) (car (known2? (cadadr entry) stack)) (car (known2? (cadr entry) stack)))]
+        [(equal? 'cdr operator) (if (list? cadr) (cdr (known2? (cadadr entry) stack)) (cdr (known2? (cadr entry) stack)))]
         [(equal? 'pair? operator) (pair? (known2? (cdr entry) stack))]
 
         
@@ -76,14 +76,14 @@ COLE ANDERSON
         ;[(equal? 'write operator) (write  (SecondEval (cdr entry) stack))]
         [(list? operator) (if (pair? (caar entry))
                               (SecondEval (list (caddaar entry) (cadar entry)) (process (cadaar entry) (cdr entry) stack))
-                              (SecondEval operator (process (cadar entry) (cdr entry) stack)))]
+                              (SecondEval (caddar entry) (process (cadar entry) (cdr entry) stack)))]
                                ; cadar entry = formal parameters
                                ; cdr entry = list of actual parameters
         ;[(list? entry) (SecondEval operator (process (cadr (knownfunc? operator stack)) (cdr entry) stack))]
         [(list? entry) (known? operator stack)]
         
         
-      ))) ;)))
+      ))) ;)
       ;else
       ;entry
       (known? entry2 stack)
@@ -116,13 +116,6 @@ COLE ANDERSON
 ; (Evaluate '((x 1) (y (- z 2))) '((z 9))) => '((x 1) (y 7) (z 9))
   
 
-
-(define (carcdrEval entry stack)
-(write "a")
-  
-   
-  )
-
 (define (caddaar func) (car (cddaar func)))
 
 (define (find elem stack)
@@ -137,15 +130,28 @@ COLE ANDERSON
 
 ;KNOWN? FUNCTION
 (define (known2? elem stack)
+  (if (list? elem)
+      (known2? (car elem) stack)
   (if (number? elem)
       elem
       (if (null? stack)
           elem
           (if (equal? elem (caar stack))
               (cadar stack)
-              (known2? elem (cdr stack))))))
+              (known2? elem (cdr stack)))))))
+
+(define (known3? elem stack)
+  (if (number? elem)
+      elem
+      (if (null? stack)
+          elem
+          (if (equal? elem (caar stack))
+              (cadar stack)
+              (known3? elem (cdr stack))))))
 
 (define (known? elem stack)
+  (if (list? elem)
+      (known? (car elem) stack)
   (if (number? elem)
       elem
       (if (null? stack)
@@ -155,7 +161,7 @@ COLE ANDERSON
                   ;(write (cadar stack));
                   (SecondEval (cadar stack) stack)
                   (cadar stack))
-              (known? elem (cdr stack))))))
+              (known? elem (cdr stack)))))))
 
 (define (knownfunc? elem stack)
   (if (number? elem)
@@ -190,8 +196,8 @@ COLE ANDERSON
 ;END PROGRAM
 
 
-;Success: A B C D F G
-;Fail: E H
+;Success: A B C E F G
+;Fail: D H
 
 (write "Test A")
  (startEval
@@ -223,19 +229,6 @@ COLE ANDERSON
 (print "should be 21")
 (newline)
 
-(write "Test D")
-(startEval '(
-              (
-                (lambda (x) (lambda (y) (+ x y)))
-                1
-              )
-              2
-            )
- )
-
-(print "should be 3")
-(newline)
-
 (write "Test E")
 (startEval '(let ((+ (lambda (x) (cdr x)))
                    (- '(1 2 3 4 5)))
@@ -244,6 +237,7 @@ COLE ANDERSON
 
 (print "should be (2 3 4 5)")
 (newline)
+
 (write "Test F")
 (startEval (let ([sub1 (lambda (x) (- x 1))]
                   [not (lambda (x) (if x #f #t))])
@@ -292,13 +286,13 @@ COLE ANDERSON
 ;This ones broken:
 ;(write "ourTest3:")
 ;(startEval '(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y)))
-(write "Expected")(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y))
+;(write "Expected")(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y))
 (write "ourTest4:")
 (startEval '(let ((inc(lambda (x) (+ x (quote 1)))))(inc (quote 5))))
 (write "Expected")(let ((inc(lambda (x) (+ x (quote 1)))))(inc (quote 5)))
-(write "ourTest5:")
-(startEval '(((lambda (x) (lambda (y) (+ x y))) 1) 2))
-(write "Expected")(((lambda (x) (lambda (y) (+ x y))) 1) 2)
+;(write "ourTest5:")
+;(startEval '(((lambda (x) (lambda (y) (+ x y))) 1) 2))
+;(write "Expected")(((lambda (x) (lambda (y) (+ x y))) 1) 2)
 (write "ourTest6:")
 (startEval '(letrec ((fact (lambda (x) (if (= x 0) (quote 1) (* x (fact (- x 1))))))) (fact 10)))
 (write "Expected")(letrec ((fact (lambda (x) (if (= x 0) (quote 1) (* x (fact (- x 1))))))) (fact 10))
@@ -311,6 +305,21 @@ COLE ANDERSON
 (write "ourTest9:")
 (startEval '(let ([e 5][! *]) (! e e)))
 (write "Expected")(let ([e 5][! *]) (! e e))
+
+
+(write "Test D")
+(startEval '(
+              (
+                (lambda (x) (lambda (y) (+ x y)))
+                1
+              )
+              2
+            )
+ )
+
+(print "should be 3")
+(newline)
+
 
 #|
 (write "Test BROKEN ONE THAT CAN GO TO HELL")
@@ -340,6 +349,7 @@ COLE ANDERSON
     )
  )
 |#
+
 
 
 
