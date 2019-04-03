@@ -12,19 +12,19 @@ COLE ANDERSON
 |#
 
 (define (startEval entry)
-  (SecondEval entry '())
+  (SecondEval entry '()) ;start evaluation with an empty stack
   )
 
 (define (SecondEval entry2 stack)
-  (if (list? entry2);checks for valid input into program ie: (startEval '(entry))
-     ; (and (and (and (and (write entry2) (writeln stack)) (write-char #\newline))) (let ([operator (known2? (car entry2) stack)]) (let ([entry (append (list operator) (cdr entry2))])
-      (let ([operator (known2? (car entry2) stack)]) (let ([entry (append (list operator) (cdr entry2))])
+  (if (list? entry2)
+      (let ([operator (knownOperator? (car entry2) stack)]) (let ([entry (append (list operator) (cdr entry2))])
       (cond
-        ;Checks for what operation is placed as the first element of entry
-        ;and determines what the proper operation to execute
+        ;checks if operator is already known in the stack and
+        ;if so, then replaces it in the function call, renamed entry from entry2
+        ;then determines what the proper operation to execute
 
-        ;1)CONSTANTS AND VARIABLES: //COMPLETE
-        [(number? operator) operator]
+        ;1)CONSTANTS AND VARIABLES AND QUOTE: //COMPLETE
+        ;  Constants and variables are implemented last as it is the else condition on the if statement
         [(equal? 'quote operator) (cadr entry)]
         
         ;2)ARITHMETIC OPERATORS: //COMPLETE
@@ -42,147 +42,135 @@ COLE ANDERSON
         [(equal? 'equal? operator) (eqEval (cdr entry) stack)]
         
         ;4)LISTS: CAR, CDR, CONS, PAIR? //COMPLETE
-        ;[(equal? 'car operator) (car (cadadr entry))]
-        ;[(equal? 'cdr operator) (cdr (cadadr entry))]
-        ;[(equal? 'pair? operator) (pair? (cadr entry))]
-
-        [(equal? 'car operator) (car (known2? (cdr entry) stack))]
-        [(equal? 'cdr operator) (cdr (known2? (cdr entry) stack))]
-        [(equal? 'pair? operator) (pair? (known2? (cdr entry) stack))]
+        [(equal? 'car operator) (if (list? cadr) (car (knownNotEval? (cadadr entry) stack)) (car (knownNotEval? (cadr entry) stack)))]
+        [(equal? 'cdr operator) (if (list? cadr) (cdr (knownNotEval? (cadadr entry) stack)) (cdr (knownNotEval? (cadr entry) stack)))]
+        [(equal? 'pair? operator) (pair? (knownNotEval? (cdr entry) stack))]
 
         
         [(equal? 'cons operator) (cons (known? (cadr entry) stack) (SecondEval (caddr entry) stack))]
         
         ;5) CONDITIONAL: IF //COMPLETE
-        [(equal? 'if operator) (ifEval entry stack)]
+        [(equal? 'if operator) (if (SecondEval (cadr entry) stack) ;calls starteval to evaluate function
+                                   (SecondEval (caddr entry) stack) ;does this entry if true
+                                   (SecondEval (cadddr entry) stack))]
 
 
         #|TODO: LAMBDA |#
-        ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA
-        [(equal? 'lambda operator) (if (find (cadr entry) stack)
+        ;6)LAMBDA EXPRESSION: SINGLE EXPRESSION LAMBDA AND FUNCTION APPLICATION
+        [(equal? 'lambda operator) (if (member (cadr entry) stack)
                                        (SecondEval(caddr entry) stack)
-                                       (write 'function))] ; assumes lambda will be called only as itself or
-                                                           ; that it is a function call if formal params are in stack
+                                       (write 'function))] ;writes function if lambda without funciton application is called
+        ; assumes lambda will be called only as itself or
+        ; that it is a function call if formal params are in stack
         
-        #|TODO: FUNCTION APPLICATION |#
-        ;7)FUNCTION APPLICATION: APPLYING LAMBDA EXP TO ARGS
 
         #|TODO: LOCAL BINDING |#
         ;8)LOCAL BINDING: LET LETREC
 	[(equal? 'let operator) (SecondEval (caddr entry)  (append (cadr entry) stack))]
-        ;letrec;
-        [(equal? 'letrec operator) (SecondEval (caddr entry) (append (cadr entry) stack))];(list (list (caaadr entry) 'UNDEF) (caadr entry)) stack))]
+        [(equal? 'letrec operator) (SecondEval (caddr entry) (append (cadr entry) stack))]
 
-        ;[(equal? 'write operator) (write  (SecondEval (cdr entry) stack))]
+        ; Extra conditions: operator as a list (for lambda application) and entry is a list (for lists as constants/variables
         [(list? operator) (if (pair? (caar entry))
                               (SecondEval (list (caddaar entry) (cadar entry)) (process (cadaar entry) (cdr entry) stack))
-                              (SecondEval operator (process (cadar entry) (cdr entry) stack)))]
+                              (SecondEval (caddar entry) (process (cadar entry) (cdr entry) stack)))]
                                ; cadar entry = formal parameters
                                ; cdr entry = list of actual parameters
-        ;[(list? entry) (SecondEval operator (process (cadr (knownfunc? operator stack)) (cdr entry) stack))]
-        [(list? entry) (known? operator stack)]
+        [(list? entry) (knownNotEval? operator stack)]
         
         
-      ))) ;)))
+      ))) ;)
       ;else
-      ;entry
-      (known? entry2 stack)
-      ;if input is not in form: startEval '(your input here)
-      ;(and(and (write "invalid input")(write-char #\newline))(write "Try: startEval '(your input here)"))
-      ))
+      (known? entry2 stack)))
 ;END MAIN
 
 
 #|HELPER FUNCTIONS|#
-;(caar '((x 5) (y 3) (z 2))) = 'x
-;(cdr '((x 5) (y 3) (z 2))) = '((y 3) (z 2))
-;(cadar '((x 5) (y 3) (z 2))) = 5
 
+#|HELPER FUNCTION PROCESS
+Parameters: param: formal parameters
+            act: actual parameters
+            stack: stack
+Function: pair formal parameters with actual parameters then append to stack
+Returns: newly made stack|#
 (define (process param act stack)
   (if (or (null? param) (null? act))
       stack
-     (append (list (list (car param) (SecondEval (car act) stack))) (append (process3 (cdr param) (cdr act) '()) stack))))
+     (append (list (list (car param) (SecondEval (car act) stack))) (append (processHelp (cdr param) (cdr act) stack) stack))))
 
-(define (process3 param act stack)
+#|HELPER FUNCTION PROCESSHELP
+Parameters: param: formal parameters
+            act: actual parameters
+            stack: stack
+Function: pair formal parameters with actual parameters then append to empty stack to avoid repeats in stack
+Returns: newly made stack|#
+(define (processHelp param act stack)
   (if (or (null? param) (null? act))
-      stack
-     (append (append (list (list (car param) (SecondEval (car act) stack))) (process3 (cdr param) (cdr act) stack)) stack)))
-
-(define (Evaluate List)
-  (if (null? List)
-      List
-      (append (list (list (caar List) (SecondEval (cdar List) List))) (Evaluate (cdr List) List))))
-
-; (Evaluate '((x 1) (y (- z 2))) '((z 9))) => '((x 1) (y 7) (z 9))
+      '()
+     (append (append (list (list (car param) (SecondEval (car act) stack))) (processHelp (cdr param) (cdr act) stack)) '())))
   
-
-
-(define (carcdrEval entry stack)
-(write "a")
-  
-   
-  )
-
+#|HELPER FUNCTION caddaar
+Does exactly what you expect it to do on the parameter 'func'
+|#
 (define (caddaar func) (car (cddaar func)))
 
-(define (find elem stack)
-  (if (number? elem)
-      #t
-      (if (null? stack)
-          #f
-      (if (equal? elem (caar stack))
-          #t
-          (known? elem (cdr stack))))))
 
-
-;KNOWN? FUNCTION
-(define (known2? elem stack)
+#|HELPER FUNCTION KNOWNNOTEVAL
+Parameters: elem: element to find in stack
+            stack: stack
+Function: finds element in stack if known and returns statement without evaluation
+(elem was sometimes given in a list when it should be evaluated as a element)
+Returns: statement equivalent of element given
+(like returning value of name-value pair)|#
+(define (knownNotEval? elem stack)
+  (if (list? elem)
+      (knownNotEval? (car elem) stack)
   (if (number? elem)
       elem
       (if (null? stack)
           elem
           (if (equal? elem (caar stack))
               (cadar stack)
-              (known2? elem (cdr stack))))))
+              (knownNotEval? elem (cdr stack)))))))
 
+#|HELPER FUNCTION KNOWNOPERATOR
+Parameters: elem: element to find in stack
+            stack: stack
+Function: finds element in stack if known and returns statement without evaluation
+Returns: statement equivalent of element given
+(like returning value of name-value pair)|#
+(define (knownOperator? elem stack)
+  (if (number? elem)
+      elem
+      (if (null? stack)
+          elem
+          (if (equal? elem (caar stack))
+              (cadar stack)
+              (knownOperator? elem (cdr stack))))))
+
+#|HELPER FUNCTION KNOWN
+Parameters: elem: element to find in stack
+            stack: stack
+Function: finds element in stack if known and returns evaluation of the statement
+Returns: evaluation of the value of the element given
+(like returning an evaluated value of name-value pair)|#
 (define (known? elem stack)
+  (if (list? elem)
+      (known? (car elem) stack)
   (if (number? elem)
       elem
       (if (null? stack)
           elem
           (if (equal? elem (caar stack))
               (if (pair? (cadar stack)) 
-                  ;(write (cadar stack));
                   (SecondEval (cadar stack) stack)
                   (cadar stack))
-              (known? elem (cdr stack))))))
+              (known? elem (cdr stack)))))))
 
-(define (knownfunc? elem stack)
-  (if (number? elem)
-      elem
-      (if (equal? elem (caar stack))
-          (cadar stack)
-          (knownfunc? elem (cdr stack)))))
-
-(define (known1? elem stack)
-  (if (number? elem)
-      elem
-      (if (equal? elem (car stack))
-          (if (pair? (cadr stack)) 
-              ;(write (cadar stack));
-              (SecondEval (cadr stack) stack)
-              (cadr stack))
-          (known? elem (cddr stack)))))
-
-;IF EVAL FUNCTION
-;(ifEval entry))
-(define (ifEval entry stack)
-  (if (SecondEval (cadr entry) stack) ;calls starteval to evaluate function
-      (SecondEval (caddr entry) stack) ;does this entry if true
-      (SecondEval (cadddr entry) stack))) ;does this entry if false
-
-;EQUAL EVAL FUNCTION
-;(eqEval entry)
+#|HELPER FUNCTION EQEVAL
+Parameters: entry: list of two expression to check if equal
+            stack: stack
+Function: checks the evaluation of both expressions to determine if they are equal
+Returns: true or false|#
 (define (eqEval entry stack)
   (equal? (SecondEval (car entry) stack) (SecondEval (cadr entry) stack)))
 
@@ -190,8 +178,8 @@ COLE ANDERSON
 ;END PROGRAM
 
 
-;Success: A B C D F G
-;Fail: E H
+;Success: A B C E F G
+;Fail: D H
 
 (write "Test A")
  (startEval
@@ -244,6 +232,7 @@ COLE ANDERSON
 
 (print "should be (2 3 4 5)")
 (newline)
+
 (write "Test F")
 (startEval (let ([sub1 (lambda (x) (- x 1))]
                   [not (lambda (x) (if x #f #t))])
@@ -292,7 +281,7 @@ COLE ANDERSON
 ;This ones broken:
 ;(write "ourTest3:")
 ;(startEval '(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y)))
-(write "Expected")(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y))
+;(write "Expected")(let ([x (car '(1 4 5))][y (car '(4 5))]) (+ x y))
 (write "ourTest4:")
 (startEval '(let ((inc(lambda (x) (+ x (quote 1)))))(inc (quote 5))))
 (write "Expected")(let ((inc(lambda (x) (+ x (quote 1)))))(inc (quote 5)))
@@ -309,8 +298,22 @@ COLE ANDERSON
 (startEval '(let ([+ *]) (+ 3 4)))
 (write "Expected")(let ([+ *]) (+ 3 4))
 (write "ourTest9:")
-(startEval '(let ([e 5][! *]) (! e e)))
-(write "Expected")(let ([e 5][! *]) (! e e))
+(startEval '(letrec ([e 5][! *]) (! e e)))
+(write "Expected")(letrec ([e 5][! *]) (! e e))
+(write "ourTest10:")
+(startEval '(letrec ((x (- 9 5))(e (* 3 1))) (* e 5)))
+(write "Expected")(letrec (( x(- 9 5))(e (* 3 1))) (* e 5))
+(write "ourTest10:")
+(startEval '(let ((x (+ 3 4))) (equal? x 7)))
+(write "Expected")(let ((x (+ 3 4))) (equal? x 7))
+(write "ourTest10:")
+(startEval '(let ((x (+ 3 4))) (equal? x 7)))
+(write "Expected")(let ((x (+ 3 4))) (equal? x 7))
+(write "ourTest10:")
+(startEval '(letrec ((y 5)(f (lambda (x) (+ x y)))) (f 4)))
+(write "Expected")(letrec ((y 5)(f (lambda (x) (+ x y)))) (f 4))
+
+
 
 #|
 (write "Test BROKEN ONE THAT CAN GO TO HELL")
@@ -339,6 +342,7 @@ COLE ANDERSON
            (intersect (quote (a b c d)) (quote (b c d e f)))
     )
  )
+
 |#
 
 
@@ -358,7 +362,9 @@ COLE ANDERSON
 ;(write-char #\newline)
 ;(startEval '(let ([x 5]) x))
 
-
+;(caar '((x 5) (y 3) (z 2))) = 'x
+;(cdr '((x 5) (y 3) (z 2))) = '((y 3) (z 2))
+;(cadar '((x 5) (y 3) (z 2))) = 5
 
 ;(startEval '(let ([y 5][x 3]) (let ([x 7]) (+ x y))))
 ;(startEval '(lambda (x y) (+ x y)))
