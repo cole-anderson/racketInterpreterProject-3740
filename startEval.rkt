@@ -176,6 +176,7 @@ Returns: true or false|#
 
 
 ;END PROGRAM
+:TESTS
 
 
 ;Success: A B C E F G
