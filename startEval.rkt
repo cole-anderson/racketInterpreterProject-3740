@@ -176,7 +176,6 @@ Returns: true or false|#
 
 
 ;END PROGRAM
-:TESTS
 
 
 ;Success: A B C E F G
@@ -316,46 +315,9 @@ Returns: true or false|#
 
 
 
+
+
 #|
-(write "Test BROKEN ONE THAT CAN GO TO HELL")
-(startEval
-  '(letrec ((intersect
-             (lambda (s t) 
-               (if (equal? s (quote ()))
-                 (quote ())
-                 (if (member (car s) t)
-                   (cons (car s) (intersect (cdr s) t))
-                   (intersect (cdr s) t)
-                 )
-               )
-              ))
-             (member
-	      (lambda (x s)
-                 (if (equal? s (quote ()))
-                   (quote #f)
-                   (if (equal? x (car s))
-                     (quote #t)
-                     (member x (cdr s))
-                   )
-	         )
-              )
-	     ))
-           (intersect (quote (a b c d)) (quote (b c d e f)))
-    )
- )
-
-|#
-
-
-
-
-
-
-
-
-
-
-
 ;-------------------------------------------------
 ;DELETE ALL AFTER THIS:
 
@@ -397,7 +359,7 @@ Returns: true or false|#
 |#
 ;LIST EVAL FUNCTION
 ;(listEval entry)
-#|
+
 (define (listEval entry)
   (cond
     [(equal? "car" (symbol->string (car entry)))
